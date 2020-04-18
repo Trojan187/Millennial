@@ -2,7 +2,7 @@
 layout: post
 title: "About the Author"
 author: "Paul Le"
-categories: facts
+categories: ctf
 tags: [sample]
 image: cuba-4.jpg
 ---
