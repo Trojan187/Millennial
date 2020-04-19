@@ -1,0 +1,116 @@
+---
+layout: post
+title: "Tools!"
+author: "Trojan187"
+categories: ctf
+tags: [ctf]
+image: cuba-1.jpg
+---
+
+---
+### dawgCTF-2020: BOF to the Top
+The challenge provides us with the code and a binary.
+
+_Files:_ `bof.c` & `bof`
+
+---
+
+`bof.c`
+```c
+
+#include "stdio.h"
+#include "string.h"
+#include "stdlib.h"
+
+// gcc -m32 -fno-stack-protector -no-pie bof.c -o bof
+
+void audition(int time, int room_num){
+	char* flag = "/bin/cat flag.txt";
+	if(time == 1200 && room_num == 366){
+		system(flag);
+	}
+}
+
+void get_audition_info(){
+	char name[50];
+	char song[50];
+	printf("What's your name?\n");
+	gets(name);
+	printf("What song will you be singing?\n");
+	gets(song);
+}
+
+void welcome(){
+	printf("Welcome to East High!\n");
+	printf("We're the Wildcats and getting ready for our spring musical\n");
+	printf("We're now accepting signups for auditions!\n");
+}
+
+int main(){
+	welcome();
+	get_audition_info();
+	return 0;
+}
+```
+---
+ `bof`
+### Analysis
+
+Running this binary as seen in the code, askes "What's your name?" and takes the user input then again it asks "What song will you be singing?" 
+
+![Image#1 Running the Bin](./images/bin_run.PNG)
+
+Lets take a look at the properties of the binary.
+
+![Image#2 checksec](./images/checksec.PNG)
+
+![Image#3 file](./images/file.PNG)
+
+Running radare2 to further analyse the binary.
+
+![Image#4 file](./images/r2_aaaa.PNG)
+
+List functions (addr, size, bbs, name)
+NOTE* the audition() function location @ `0x08049182`
+
+![Image#5 file](./images/r2_afl.PNG)
+
+Print the disassembly of the audition() function.
+
+![Image#6 file](./images/r2_pdf_audition.PNG)
+
+Print the disassembly of the get_audition_info() function
+
+![Image#7 file](./images/r2_pdf_get_audition_info.PNG)
+
+Ok so a summary of what has been found out so far:
+From the code `bof.c` we can see the audition() function will `"/bin/cat flag.txt"` if the values of time == `1200` && room_num == `366`.
+
+### PLAN:
+The address of the audition() function can be found @ `0x08049182` so if we can find the buffer overflow and control the registers the values needed can be put onto the stack and the function will provide the flag.txt. 
+
+For local testing first I created a `flag.txt` in the same working directory.
+
+Lets get started with gdb:
+
+![Image#8 file](./images/gdb_start.PNG)
+
+Before running the binary I created a pattern of 200 characters which will be used to find the segmetaion fault.
+
+![Image#9 file](./images/gdb_start_pattern_create.PNG)
+
+No segmentation fault was found with the first input.
+
+![Image#10 file](./images/gdb_no_seg_fault.PNG)
+
+Great, a segmentation fault occured on the 2nd input. With `EIP` being overwritten by `AA8A` (`0x41384141`) @ `112` characters in.
+
+![Image#11 file](./images/gdb_seg_fault_EIP.PNG)
+
+Bringing it all together - this is what my final script looked like:
+
+![Image#12 file](./images/final_solution.PNG)
+
+Local test to confirm the script is working and the flag.txt can be read:
+
+![Image#13 file](./images/final.PNG)
