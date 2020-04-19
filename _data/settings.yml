@@ -8,12 +8,13 @@ google-ID: 'UA-xxxxxxxx-2'
 
 menu:
 - {name: 'Facts', folder: 'pages', file: 'facts.html'}
+- {name: 'CTF Writeups', folder: 'pages', file: 'ctf.html'}
 - {name: 'Learning', folder: 'pages', file: 'resources.html'}
 - {name: 'Sample', folder: 'pages', file: 'sample-posts.html'}
 - {name: 'Docs', folder: 'pages', file: 'documentation.html'}
 - {name: 'About', folder: 'pages', file: 'about.html'}
 - {name: 'Contact', folder: 'pages', file: 'contact.html'}
-- {name: 'CTF', folder: 'pages', file: 'ctf.html'}
+
 
 # Available social icons are powered by Font Awesome, so you can use any icon that they offer
 social:
