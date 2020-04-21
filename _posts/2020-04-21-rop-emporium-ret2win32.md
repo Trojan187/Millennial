@@ -4,7 +4,7 @@ title: "Ret2win32"
 author: "Trojan187"
 categories: ctf
 tags: [practice,learning]
-image: ctf.PNG
+image: ret2win.PNG
 ---
 
 
