@@ -3,7 +3,7 @@ layout: post
 title: "Ret2win32"
 author: "Trojan187"
 categories: ctf
-tags: [documentation,sample]
+tags: [practice,learning]
 image: ctf.PNG
 ---
 
