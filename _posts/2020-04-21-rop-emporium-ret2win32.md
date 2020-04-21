@@ -34,25 +34,25 @@ _Files:_ `ret2win32`
 
 Lets take a look at the properties of the binary.
 
-<img src="../../../../../assets/img/blogs/2020-04-21/ret2win/checksec.PNG">
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win32/checksec.PNG">
 
 Using radare2 to analyze all referenced code.
 
-<img src="../../../../../assets/img/blogs/2020-04-21/ret2win/r2_aaaa.PNG">
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win32/r2_aaaa.PNG">
 
 Print the disassembly of the ret2win() function.
 NOTE* `0x08048662` This looks very interesting and a potential address that can be used if the registers can be controlled. 
 
-<img src="../../../../../assets/img/blogs/2020-04-21/ret2win/r2_pdf_ret2win.PNG">
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win32/r2_pdf_ret2win.PNG">
 
 Creating a pattern of 100 characters to use to locate the segmentation fault
 
-<img src="../../../../../assets/img/blogs/2020-04-21/ret2win/gdb_start_pattern_create.PNG">
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win32/gdb_start_pattern_create.PNG">
 
 Segmentation fault occured and EIP was overwritten by 'AFAA' `0x41414641`. The offset is located at 44 bytes. 
 EIP can now be controlled.
 
-<img src="../../../../../assets/img/blogs/2020-04-21/ret2win/gdb_EIP_Seg_fault.PNG">
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win32/gdb_EIP_Seg_fault.PNG">
 
 ##  Plan
 
@@ -65,11 +65,11 @@ run <<< $(python -c 'print "A"*44 + "\x62\x86\x04\x08"')
 ```
 Nice! It worked. 
 
-<img src="../../../../../assets/img/blogs/2020-04-21/ret2win/gdb_flag.PNG">
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win32/gdb_flag.PNG">
 
 And this is my final python script to exploit it.
 
-<img src="../../../../../assets/img/blogs/2020-04-21/ret2win/flag.PNG">
+<img src="../../../../../assets/img/blogs/2020-04-21/ret2win32/flag.PNG">
 
 ##  Solution
 
